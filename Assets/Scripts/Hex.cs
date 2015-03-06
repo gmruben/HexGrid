@@ -23,19 +23,6 @@ public class Hex : MonoBehaviour
 		return new Vector3(x, y, z);
 	}
 
-	public static float cubeDistance(Vector3 a, Vector3 b)
-	{
-		return (Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z)) / 2;
-	}
-
-	public static float hexDistance(Vector2 a, Vector2 b)
-	{
-		Vector3 ac = hexToCube(a);
-		Vector3 bc = hexToCube(b);
-
-		return cubeDistance(ac, bc);
-	}
-
 	public static List<HexCoordinates> movementRange(Vector3 index, int radius)
 	{
 		List<HexCoordinates> hexList = new List<HexCoordinates>();
@@ -104,5 +91,18 @@ public class Hex : MonoBehaviour
 	{
 		Vector2 hexVector = cubeToHex(cubeRound(hexToCube(hex)));
 		return new HexCoordinates((int) hexVector.x, (int) hexVector.y);
+	}
+
+	public static int cubeDistance(Vector3 a, Vector3 b)
+	{
+		return Mathf.FloorToInt((Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z)) / 2);
+	}
+
+	public static int hexDistance(HexCoordinates a, HexCoordinates b)
+	{
+		Vector3 ac = hexToCube(a.V2);
+		Vector3 bc = hexToCube(b.V2);
+
+		return cubeDistance(ac, bc);
 	}
 }

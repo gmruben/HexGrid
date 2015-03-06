@@ -27,15 +27,15 @@ public class Player : MonoBehaviour
 		energy = 5;
 	}
 
-	public void moveTo(HexCoordinates hexCoord)
+	public void moveTo(HexData hexData)
 	{
 		//Update energy
-		energy--;
+		energy -= hexData.energy;
 
-		this.hexCoord = hexCoord;
+		this.hexCoord = hexData.hexCoord;
 
 		startPosition = cachedTransform.position;
-		targetPosition = Hex.hexToWorld(hexCoord);
+		targetPosition = Hex.hexToWorld(hexData.hexCoord);
 
 		StartCoroutine(updateMove());
 	}

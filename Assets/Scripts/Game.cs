@@ -41,35 +41,47 @@ public class Game : MonoBehaviour
 			Vector3 position = gameCamera.ScreenToWorldPoint(Input.mousePosition);
 			HexCoordinates hex = Hex.worldToHex(position);
 
-			player.moveTo(hex);
-			player.onMoveEnd += onMoveEnd;
+			HexData hexData = grid.retrieveHexData(hex);
+			if (grid.isAdjacent(player.hexCoord, hex) && hexData.energy <= player.energy)
+			{
+				player.moveTo(hexData);
+				player.onMoveEnd += onMoveEnd;
 
-			gameHUD.updateEnergy(player.energy);
+				gameHUD.updateEnergy(player.energy);
+				hideRadius();
+			}
 		}
 	}
 
 	private void drawRadius(HexCoordinates hex)
+	{
+		List<HexCoordinates> hexCoordList = Hex.movementRange(Hex.hexToCube(hex.V2), 2);
+		for (int i = 0; i < hexCoordList.Count; i++)
+		{
+			if (grid.isCoordOnBounds(hexCoordList[i]) && player.hexCoord != hexCoordList[i])
+			{
+				GameObject hexInstance = GameObject.Instantiate(hexPrefab) as GameObject;
+				
+				hexInstance.transform.parent = transform;
+				hexInstance.transform.localPosition = Hex.hexToWorld(hexCoordList[i]);
+
+				hexList.Add(hexInstance);
+			}
+		}
+	}
+
+	private void hideRadius()
 	{
 		for (int i = 0; i < hexList.Count; i++)
 		{
 			GameObject.Destroy(hexList[i]);
 		}
 		hexList.Clear();
-
-		List<HexCoordinates> hexCoordList = Hex.movementRange(Hex.hexToCube(hex.V2), 2);
-		for (int i = 0; i < hexCoordList.Count; i++)
-		{
-			GameObject hexInstance = GameObject.Instantiate(hexPrefab) as GameObject;
-			
-			hexInstance.transform.parent = transform;
-			hexInstance.transform.localPosition = Hex.hexToWorld(hexCoordList[i]);
-
-			hexList.Add(hexInstance);
-		}
 	}
 
 	private void onMoveEnd()
 	{
+		player.onMoveEnd -= onMoveEnd;
 		drawRadius(player.hexCoord);
 
 		if (player.energy == 0)

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class Grid : MonoBehaviour
 {
-	private const int radius = 2;
+	public const int radius = 2;
 
-	public GameObject hexPrefab;
+	public GameObject[] hexPrefabList;
 
 	//We use a dictionary to store the map because it allows us to have maps with
 	//any type of shape. I create a unique key for each hex based on its coordinates
@@ -31,9 +31,33 @@ public class Grid : MonoBehaviour
 		return dataList[randomIndex].hexCoord;
 	}
 
+	public List<HexCoordinates> retrieveNeighbours(HexCoordinates hexCoord)
+	{
+		List<HexCoordinates> neighbours = new List<HexCoordinates>();
+		List<HexCoordinates> hexList = Hex.movementRange(Hex.hexToCube(hexCoord.V2), 1);
+
+		for (int i = 0; i < hexList.Count; i++)
+		{
+			if (isCoordOnBounds(hexList[i]))
+			{
+				neighbours.Add(hexList[i]);
+			}
+		}
+
+		return neighbours;
+	}
+
+	public bool isCoordOnBounds(HexCoordinates hexCoord)
+	{
+		string id = createId(hexCoord);
+		return hexList.ContainsKey(id);
+	}
+
 	private void instantiateHex(HexCoordinates hexCoord)
 	{
-		HexData hex = (GameObject.Instantiate(hexPrefab) as GameObject).GetComponent<HexData>();
+		int randomIndex = Random.Range(0, hexPrefabList.Length);
+
+		HexData hex = (GameObject.Instantiate(hexPrefabList[randomIndex]) as GameObject).GetComponent<HexData>();
 
 		hex.transform.parent = transform;
 		hex.init(hexCoord);
@@ -41,8 +65,30 @@ public class Grid : MonoBehaviour
 		hexList.Add(createId(hexCoord), hex);
 	}
 
-	private string createId(HexCoordinates hexCoord)
+	public string createId(HexCoordinates hexCoord)
 	{
 		return "Hex_" + hexCoord.q + "_" + hexCoord.r;
+	}
+
+	public bool isAdjacent(HexCoordinates hexCoord1, HexCoordinates hexCoord2)
+	{
+		return Hex.hexDistance(hexCoord1, hexCoord2) == 1;
+	}
+
+	public HexData retrieveHexData(HexCoordinates hexCoord)
+	{
+		string id = createId(hexCoord);
+		return hexList[id];
+	}
+
+	public int cost(HexCoordinates from, HexCoordinates to)
+	{
+		string id = createId(to);
+		return hexList[id].energy;
+	}
+
+	public int count
+	{
+		get { return (int) Mathf.Pow(radius * 2 + 1, 2); }
 	}
 }

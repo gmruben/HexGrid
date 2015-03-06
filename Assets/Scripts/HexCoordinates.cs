@@ -22,13 +22,13 @@ public class HexCoordinates
 		get { return new Vector2(q, r); }
 	}
 	
-	/*public override bool Equals(object obj)
+	public override bool Equals(object obj)
 	{
-		SquareIndex index = (SquareIndex) obj; // as SquareIndex;
-		return index.x == x && index.y == y;
+		HexCoordinates coord = (HexCoordinates) obj;
+		return coord.r == r && coord.q == q;
 	}
 	
-	public static bool operator ==(SquareIndex a, SquareIndex b)
+	public static bool operator ==(HexCoordinates a, HexCoordinates b)
 	{
 		// If both are null, or both are same instance, return true.
 		if (System.Object.ReferenceEquals(a, b))
@@ -43,15 +43,15 @@ public class HexCoordinates
 		}
 		
 		// Return true if the fields match:
-		return a.x == b.x && a.y == b.y;
+		return a.r == b.r && a.q == b.q;
 	}
 	
-	public static bool operator !=(SquareIndex a, SquareIndex b)
+	public static bool operator !=(HexCoordinates a, HexCoordinates b)
 	{
 		return !(a == b);
 	}
 	
-	public static SquareIndex operator -(SquareIndex index1, SquareIndex index2)
+	/*public static SquareIndex operator -(SquareIndex index1, SquareIndex index2)
 	{
 		return new SquareIndex(index1.x - index2.x, index1.y - index2.y);
 	}
