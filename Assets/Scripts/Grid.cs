@@ -2,11 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using Model;
+using System.Linq;
+
 public class Grid : MonoBehaviour
 {
 	public const int radius = 2;
 
 	public GameObject[] hexPrefabList;
+
+	public Tile[, ] tileList = new Tile[5, 5];
 
 	//We use a dictionary to store the map because it allows us to have maps with
 	//any type of shape. I create a unique key for each hex based on its coordinates
@@ -19,6 +24,26 @@ public class Grid : MonoBehaviour
 			for (int j = -radius; j <= radius; j++)
 			{
 				instantiateHex(new HexCoordinates(i, j));
+
+				int x = i + radius;
+				int y = j + radius;
+				tileList[x, y] = new Tile(x, y);
+			}
+		}
+
+		AllTiles.ToList().ForEach(o => o.FindNeighbours(this));
+	}
+
+	public IEnumerable<Tile> AllTiles
+	{
+		get
+		{
+			for (int x = 0; x < 5; x++)
+			{
+				for (int y = 0; y < 5; y++)
+				{
+					yield return tileList[x, y];
+				}
 			}
 		}
 	}
@@ -38,7 +63,7 @@ public class Grid : MonoBehaviour
 
 		for (int i = 0; i < hexList.Count; i++)
 		{
-			if (isCoordOnBounds(hexList[i]))
+			if (hexCoord != hexList[i] && isCoordOnBounds(hexList[i]))
 			{
 				neighbours.Add(hexList[i]);
 			}
