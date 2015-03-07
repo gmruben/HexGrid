@@ -34,5 +34,13 @@ namespace PathFind
 			
 			return null;
 		}
+
+		public static Path<HexData> FindPathHexData(HexData start, HexData destination)
+		{	
+			Func<HexData, HexData, double> distance = (node1, node2) => node2.energy;
+			Func<HexData, double> estimate = t => Hex.hexDistance(t.hexCoord, destination.hexCoord);
+			
+			return FindPath(start, destination, distance, estimate);
+		}
 	}
 }

@@ -3,15 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 
 using Model;
+using PathFind;
 using System.Linq;
 
 public class Grid : MonoBehaviour
 {
 	public const int radius = 2;
 
+	public float goldProbability = 0.1f;
 	public GameObject[] hexPrefabList;
 
 	public Tile[, ] tileList = new Tile[5, 5];
+
+	public GameObject hexPrefab;
+
+	private List<GameObject> highlightedHexList = new List<GameObject>();
 
 	//We use a dictionary to store the map because it allows us to have maps with
 	//any type of shape. I create a unique key for each hex based on its coordinates
@@ -27,25 +33,12 @@ public class Grid : MonoBehaviour
 
 				int x = i + radius;
 				int y = j + radius;
+
 				tileList[x, y] = new Tile(x, y);
 			}
 		}
 
-		AllTiles.ToList().ForEach(o => o.FindNeighbours(this));
-	}
-
-	public IEnumerable<Tile> AllTiles
-	{
-		get
-		{
-			for (int x = 0; x < 5; x++)
-			{
-				for (int y = 0; y < 5; y++)
-				{
-					yield return tileList[x, y];
-				}
-			}
-		}
+		hexList.ToList().ForEach(o => o.Value.FindNeighbours(this));
 	}
 
 	public HexCoordinates retrieveRandomCoord()
@@ -115,5 +108,42 @@ public class Grid : MonoBehaviour
 	public int count
 	{
 		get { return (int) Mathf.Pow(radius * 2 + 1, 2); }
+	}
+
+	public void showHighlightedCells(HexCoordinates hex, int energy)
+	{
+		HexData startHexData = retrieveHexData(hex);
+
+		List<HexCoordinates> hexCoordList = Hex.movementRange(Hex.hexToCube(hex.V2), energy);
+		for (int i = 0; i < hexCoordList.Count; i++)
+		{
+			if (isCoordOnBounds(hexCoordList[i]) && hex != hexCoordList[i])
+			{
+				HexData hexData = retrieveHexData(hexCoordList[i]);
+				if (hexData.isEmpty)
+				{
+					Path<HexData> path = PathFind.PathFind.FindPathHexData(startHexData, hexData);
+
+					if (path.TotalCost <= energy)
+					{
+						GameObject hexInstance = GameObject.Instantiate(hexPrefab) as GameObject;
+						
+						hexInstance.transform.parent = transform;
+						hexInstance.transform.localPosition = Hex.hexToWorld(hexCoordList[i]);
+						
+						highlightedHexList.Add(hexInstance);
+					}
+				}
+			}
+		}
+	}
+
+	public void hideHighlightedCells()
+	{
+		for (int i = 0; i < highlightedHexList.Count; i++)
+		{
+			GameObject.Destroy(highlightedHexList[i]);
+		}
+		highlightedHexList.Clear();
 	}
 }

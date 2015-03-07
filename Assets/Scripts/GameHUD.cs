@@ -14,7 +14,6 @@ public class GameHUD : MonoBehaviour
 
 	public void init()
 	{
-		endTurnButton.setActive(false);
 		endTurnButton.onClick += onEndTurnButtonClick;
 	}
 
@@ -35,7 +34,6 @@ public class GameHUD : MonoBehaviour
 
 	private void onEndTurnButtonClick()
 	{
-		endTurnButton.setActive(false);
 		if (onEndTurn != null) onEndTurn();
 	}
 }
