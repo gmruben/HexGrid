@@ -36,7 +36,7 @@ public class Grid : MonoBehaviour
 
 		StartCoroutine(instantiateGrid());
 	}
-
+	
 	private IEnumerator instantiateGrid()
 	{
 		for (int i = innerRadius; i <= outerRadius; i++)
@@ -50,11 +50,13 @@ public class Grid : MonoBehaviour
 				bool hasGold = UnityEngine.Random.Range(0.0f, 1.0f) < goldProbability;
 
 				instantiateHex(hasGold, new HexCoordinates((int) hexVector.x, (int) hexVector.y));
-				
+
+				//Wait 0.1 seconds between cells to make it look cool when instantiating the grid
 				yield return new WaitForSeconds(0.1f);
 			}
 		}
-		
+
+		//Calculate the neighbours for each cell
 		hexList.ToList().ForEach(o => o.Value.FindNeighbours(this));
 		if (onCreated != null) onCreated();
 	}
@@ -85,7 +87,7 @@ public class Grid : MonoBehaviour
 
 	public bool isCoordOnBounds(HexCoordinates hexCoord)
 	{
-		string id = createId(hexCoord);
+		string id = createHexId(hexCoord);
 		return hexList.ContainsKey(id);
 	}
 
@@ -97,9 +99,13 @@ public class Grid : MonoBehaviour
 		hex.transform.localPosition = hexToWorld(hexCoord);
 
 		hex.init(hexCoord, hasGold);
-		hexList.Add(createId(hexCoord), hex);
+		hexList.Add(createHexId(hexCoord), hex);
 	}
 
+	/// <summary>
+	/// Retrieves a random cell out of the list of cell types (easy, medium and hard)
+	/// </summary>
+	/// <returns>The GameObject for the cell.</returns>
 	private GameObject retrieveRandomHex()
 	{
 		int index = 0;
@@ -122,7 +128,12 @@ public class Grid : MonoBehaviour
 		return hexPrefabList[index];
 	}
 
-	public string createId(HexCoordinates hexCoord)
+	/// <summary>
+	/// Creates a unique Hex Id to store the cell in the dictionary
+	/// </summary>
+	/// <returns>The Hex Id.</returns>
+	/// <param name="hexCoord">The coordinates for the cell.</param>
+	public string createHexId(HexCoordinates hexCoord)
 	{
 		return "Hex_" + hexCoord.q + "_" + hexCoord.r;
 	}
@@ -134,13 +145,13 @@ public class Grid : MonoBehaviour
 
 	public HexData retrieveHexData(HexCoordinates hexCoord)
 	{
-		string id = createId(hexCoord);
+		string id = createHexId(hexCoord);
 		return hexList[id];
 	}
 
 	public int cost(HexCoordinates from, HexCoordinates to)
 	{
-		string id = createId(to);
+		string id = createHexId(to);
 		return hexList[id].energy;
 	}
 
@@ -181,7 +192,6 @@ public class Grid : MonoBehaviour
 	{
 		for (int i = 0; i < highlightedHexList.Count; i++)
 		{
-			//GameObject.Destroy(highlightedHexList[i]);
 			PoolManager.instance.destroyInstance(highlightedHexList[i].GetComponent<PoolInstance>());
 		}
 		highlightedHexList.Clear();

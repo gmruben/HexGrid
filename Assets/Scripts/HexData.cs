@@ -12,8 +12,8 @@ public class HexData : MonoBehaviour, IHasNeighbours<HexData>
 	public int energy = 1;
 	public bool isEmpty { get; set; }
 
-	public GameObject goldPrefab;
-	private GameObject gold;
+	public GameObject goldPiecePrefab;
+	private GoldPiece goldPiece;
 
 	public HexCoordinates hexCoord { get; private set; }
 
@@ -25,8 +25,8 @@ public class HexData : MonoBehaviour, IHasNeighbours<HexData>
 		//If the hex has a gold piece, create it
 		if (hasGold)
 		{
-			gold = GameObject.Instantiate(goldPrefab) as GameObject;
-			gold.transform.position = transform.position;
+			goldPiece = (GameObject.Instantiate(goldPiecePrefab) as GameObject).GetComponent<GoldPiece>();
+			goldPiece.transform.position = transform.position;
 		}
 	}
 
@@ -44,7 +44,7 @@ public class HexData : MonoBehaviour, IHasNeighbours<HexData>
 		if (hasGold)
 		{
 			player.updateGold(1);
-			GameObject.Destroy(gold);
+			goldPiece.take();
 		}
 	}
 
@@ -55,6 +55,6 @@ public class HexData : MonoBehaviour, IHasNeighbours<HexData>
 
 	public bool hasGold
 	{
-		get { return gold != null; }
+		get { return goldPiece != null; }
 	}
 }
