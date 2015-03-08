@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,15 +16,15 @@ public class AIController : UnitController
 {
 	private Grid grid;
 	
-	private Player unit;
-	private Player target;
+	private Unit unit;
+	private Unit target;
 
 	private MoveController moveController;
 
 	private int currentIndex;
 	private List<HexData> currentPath;
 
-	public AIController(string userName, Grid grid, Player unit, Player target) : base(userName)
+	public AIController(string userName, Grid grid, Unit unit, Unit target) : base(userName)
 	{
 		this.grid = grid;
 		this.unit = unit;
@@ -59,9 +59,11 @@ public class AIController : UnitController
 		//For the distance function we use the cell energy
 		Func<HexData, HexData, double> distance = (node1, node2) => node2.energy;
 		//For the estimate we just use the direct distance between two cells
-		Func<HexData, double> estimate = t => Hex.hexDistance(t.hexCoord, destination.hexCoord);
+		Func<HexData, double> estimate = t => HexMath.hexDistance(t.hexCoord, destination.hexCoord);
+		//
+		Func<HexData, List<HexData>> neighbours = node => node.Neighbours.ToList();
 		
-		List<HexData> path = PathFind.PathFind.FindPath(start, destination, distance, estimate).ToList();
+		List<HexData> path = PathFind.PathFind.FindPath(start, destination, distance, estimate, neighbours).ToList();
 
 		//Remove the first(unit position) and last node(target position)
 		path.RemoveAt(0);

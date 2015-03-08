@@ -6,7 +6,7 @@ using PathFind;
 
 namespace Model
 {
-    public class Tile : SpacialObject, IHasNeighbours<Tile>
+    /*public class Tile : SpacialObject, IHasNeighbours<Tile>
     {
         public Tile(int x, int y)
             : base(x, y)
@@ -76,5 +76,5 @@ namespace Model
                 };
             }
         }
-    }
+    }*/
 }

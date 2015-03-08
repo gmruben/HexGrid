@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 
+/// <summary>
+/// Game HUD for the game.
+/// </summary>
 public class GameHUD : MonoBehaviour
 {
 	public Text energy;
@@ -12,6 +15,7 @@ public class GameHUD : MonoBehaviour
 
 	void Awake()
 	{
+		//Set End Turn button inactive when awake
 		endTurnButton.setActive(false);
 	}
 

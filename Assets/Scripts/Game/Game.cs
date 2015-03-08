@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using Model;
 using PathFind;
 
+/// <summary>
+/// This class controls the flow for the main game.
+/// </summary>
 public class Game : MonoBehaviour
 {
-	public Camera gameCamera;
-
-	private Player player;
-	private Player enemy;
+	private Unit userUnit;
+	private Unit aiUnit;
 
 	public Grid grid;
 
@@ -38,17 +39,17 @@ public class Game : MonoBehaviour
 
 	public void onGridCreated()
 	{
-		player = EntityManager.instantiatePlayer();
-		enemy = EntityManager.instantiateEnemy();
+		userUnit = EntityManager.instantiateUserUnit();
+		aiUnit = EntityManager.instantiateAIUnit();
 
-		player.init(grid);
-		enemy.init(grid);
+		userUnit.init(grid);
+		aiUnit.init(grid);
 
-		player.onUpdateEnergy += onUpdateEnergy;
-		player.onGetGold += onGetGold;
+		userUnit.onUpdateEnergy += onUpdateEnergy;
+		userUnit.onGetGold += onGetGold;
 
-		userControllerList.Add(new UserController("PLAYER", grid, player, gameHUD));
-		userControllerList.Add(new AIController("ENEMY", grid, enemy, player));
+		userControllerList.Add(new UserController("USER", grid, userUnit, gameHUD));
+		userControllerList.Add(new AIController("AI", grid, aiUnit, userUnit));
 
 		HexCoordinates hexCoord1 = grid.retrieveRandomCoord();
 		HexCoordinates hexCoord2 = grid.retrieveRandomCoord();
@@ -58,8 +59,8 @@ public class Game : MonoBehaviour
 			hexCoord2 = grid.retrieveRandomCoord();
 		}
 
-		player.setPosition(hexCoord1);
-		enemy.setPosition(hexCoord2);
+		userUnit.setPosition(hexCoord1);
+		aiUnit.setPosition(hexCoord2);
 
 		string message = userControllerList[currentUserIndex].userName + " " + StringsStore.retrieveString("TURN");
 		showTurnOverlay(message, onTurnOverlayEnd);

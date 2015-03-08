@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections;
 
@@ -12,7 +12,8 @@ public class MoveController
 
 	public event Action onMoveEnd;
 
-	private Transform cachedTransform;
+	private Grid grid;
+	private Transform transform;
 
 	private Vector3 startPosition;
 	private Vector3 targetPosition;
@@ -20,16 +21,17 @@ public class MoveController
 	private bool inMove = false;
 	private Vector3 moveDirection;
 
-	public MoveController(float speed, Transform cachedTransform)
+	public MoveController(Grid grid, Transform transform, float speed)
 	{
+		this.grid = grid;
 		this.speed = speed;
-		this.cachedTransform = cachedTransform;
+		this.transform = transform;
 	}
 
 	public void moveTo(HexCoordinates hexCoord)
 	{	
-		startPosition = cachedTransform.position;
-		targetPosition = Hex.hexToWorld(hexCoord);
+		startPosition = transform.position;
+		targetPosition = grid.hexToWorld(hexCoord);
 
 		inMove = true;
 		moveDirection = (targetPosition - startPosition).normalized;
@@ -39,14 +41,14 @@ public class MoveController
 	{
 		if (inMove)
 		{
-			if ((targetPosition - cachedTransform.position).sqrMagnitude > 0.005f)
+			if ((targetPosition - transform.position).sqrMagnitude > 0.005f)
 			{
-				cachedTransform.position += moveDirection * speed * Time.deltaTime;
+				transform.position += moveDirection * speed * Time.deltaTime;
 			}
 			else
 			{
 				inMove = false;
-				cachedTransform.position = targetPosition;
+				transform.position = targetPosition;
 
 				if (onMoveEnd != null) onMoveEnd();
 			}

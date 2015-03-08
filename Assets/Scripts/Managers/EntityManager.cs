@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -6,15 +6,15 @@ using System.Collections;
 /// </summary>
 public class EntityManager
 {
-	public static Player instantiatePlayer()
+	public static Unit instantiateUserUnit()
 	{
-		GameObject playerPrefab = Resources.Load<GameObject>("Prefabs/Game/Player");
-		return (GameObject.Instantiate(playerPrefab) as GameObject).GetComponent<Player>();
+		GameObject playerPrefab = Resources.Load<GameObject>("Prefabs/Game/UserUnit");
+		return (GameObject.Instantiate(playerPrefab) as GameObject).GetComponent<Unit>();
 	}
 
-	public static Player instantiateEnemy()
+	public static Unit instantiateAIUnit()
 	{
-		GameObject enemyPrefab = Resources.Load<GameObject>("Prefabs/Game/Enemy");
-		return (GameObject.Instantiate(enemyPrefab) as GameObject).GetComponent<Player>();
+		GameObject enemyPrefab = Resources.Load<GameObject>("Prefabs/Game/AIUnit");
+		return (GameObject.Instantiate(enemyPrefab) as GameObject).GetComponent<Unit>();
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ namespace PathFind
 {
 	public static class PathFind
 	{
-		public static Path<Node> FindPath<Node>( Node start, Node destination, Func<Node, Node, double> distance, Func<Node, double> estimate) where Node : IHasNeighbours<Node>
+		public static Path<Node> FindPath<Node>( Node start, Node destination, Func<Node, Node, double> distance, Func<Node, double> estimate, Func<Node, List<Node>> neighbours) where Node : IHasNeighbours<Node>
 		{
 			var closed = new HashSet<Node>();
 			var queue = new PriorityQueue<double, Path<Node>>();
@@ -24,7 +24,7 @@ namespace PathFind
 				
 				closed.Add(path.LastStep);
 
-				foreach (Node n in path.LastStep.Neighbours)
+				foreach (Node n in neighbours(path.LastStep)) //path.LastStep.Neighbours)
 				{
 					double d = distance(path.LastStep, n);
 					var newPath = path.AddStep(n, d);
@@ -38,9 +38,10 @@ namespace PathFind
 		public static Path<HexData> FindPathHexData(HexData start, HexData destination)
 		{	
 			Func<HexData, HexData, double> distance = (node1, node2) => node2.energy;
-			Func<HexData, double> estimate = t => Hex.hexDistance(t.hexCoord, destination.hexCoord);
+			Func<HexData, double> estimate = t => HexMath.hexDistance(t.hexCoord, destination.hexCoord);
+			Func<HexData, List<HexData>> neighbours = node => node.AllNeighbours.ToList();
 			
-			return FindPath(start, destination, distance, estimate);
+			return FindPath(start, destination, distance, estimate, neighbours);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 using Model;
@@ -10,19 +10,20 @@ using System.Collections.Generic;
 public class HexData : MonoBehaviour, IHasNeighbours<HexData>
 {
 	public int energy = 1;
-	public bool isEmpty = true;
+	public bool isEmpty { get; set; }
 
 	public GameObject goldPrefab;
 	private GameObject gold;
 
 	public HexCoordinates hexCoord { get; private set; }
 
-	public void init(HexCoordinates hexCoord)
+	public void init(HexCoordinates hexCoord, bool hasGold)
 	{
 		this.hexCoord = hexCoord;
-		transform.localPosition = Hex.hexToWorld(hexCoord);
+		isEmpty = true;
 
-		if (Random.Range(0.0f, 1.0f) < 0.5f)
+		//If the hex has a gold piece, create it
+		if (hasGold)
 		{
 			gold = GameObject.Instantiate(goldPrefab) as GameObject;
 			gold.transform.position = transform.position;
@@ -38,7 +39,7 @@ public class HexData : MonoBehaviour, IHasNeighbours<HexData>
 		}
 	}
 
-	public void playerOn(Player player)
+	public void playerOn(Unit player)
 	{
 		if (hasGold)
 		{

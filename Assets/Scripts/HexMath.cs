@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Hex : MonoBehaviour
+/// <summary>
+/// This class has different functions to 
+/// </summary>
+public class HexMath : MonoBehaviour
 {
-	private const float size = 1.25f;
-
 	public static Vector2 cubeToHex(Vector3 cubeCoord)
 	{
 		float q = cubeCoord.x;
@@ -42,7 +43,7 @@ public class Hex : MonoBehaviour
 		return hexList;
 	}
 
-	public static Vector3 hexToWorld(HexCoordinates hex)
+	public static Vector3 hexToWorld(HexCoordinates hex, float size)
 	{
 		float q = (float) hex.q;
 		float r = (float) hex.r;
@@ -53,7 +54,7 @@ public class Hex : MonoBehaviour
 		return new Vector3(posx, 0, -posz);
 	}
 
-	public static HexCoordinates worldToHex(Vector3 position)
+	public static HexCoordinates worldToHex(Vector3 position, float size)
 	{
 		float q = position.x * 2.0f / 3.0f / size;
 		float r = (-position.x / 3.0f + Mathf.Sqrt(3.0f) / 3.0f * -position.z) / size;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Model
 {
-    public struct Point
+    /*public struct Point
     {
         public int X, Y;
 
@@ -14,5 +14,5 @@ namespace Model
             X = x;
             Y = y;
         }
-    }
+    }*/
 }

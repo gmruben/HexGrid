@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Model
 {
-    public abstract class SpacialObject
+    /*public abstract class SpacialObject
     {
         public Point Location;
         public int X { get { return Location.X; } }
@@ -25,5 +25,5 @@ namespace Model
         {
             return string.Format("[{0}, {1}]", X, Y);
         }
-    }
+    }*/
 }

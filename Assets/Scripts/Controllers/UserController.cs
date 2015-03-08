@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
@@ -13,14 +13,14 @@ using PathFind;
 public class UserController : UnitController
 {
 	private Grid grid;
-	private Player player;
+	private Unit unit;
 
 	private GameHUD gameHUD;
 
-	public UserController(string userName, Grid grid, Player player, GameHUD gameHUD) : base (userName)
+	public UserController(string userName, Grid grid, Unit unit, GameHUD gameHUD) : base (userName)
 	{
 		this.grid = grid;
-		this.player = player;
+		this.unit = unit;
 
 		this.gameHUD = gameHUD;
 
@@ -32,8 +32,8 @@ public class UserController : UnitController
 	{
 		gameHUD.endTurnButton.setActive(true);
 
-		player.reset();
-		grid.showHighlightedCells(player.hexCoord, player.energy);
+		unit.reset();
+		grid.showHighlightedCells(unit.hexCoord, unit.energy);
 	}
 
 	public override void update(float deltaTime)
@@ -42,16 +42,16 @@ public class UserController : UnitController
 		{
 			//Convert the mouse position to hex coordinates
 			Vector3 position = GameCamera.cachedCamera.ScreenToWorldPoint(Input.mousePosition);
-			HexCoordinates hex = Hex.worldToHex(position);
+			HexCoordinates hex = grid.worldToHex(position);
 
 			if (grid.isCoordOnBounds(hex))
 			{
 				//Check that the unity has enough energy to move to that cell and that is it is adjacent and empty
 				HexData hexData = grid.retrieveHexData(hex);
-				if (grid.isAdjacent(player.hexCoord, hex) && hexData.isEmpty && hexData.energy <= player.energy)
+				if (grid.isAdjacent(unit.hexCoord, hex) && hexData.isEmpty && hexData.energy <= unit.energy)
 				{
-					player.moveTo(hexData);
-					player.onMoveEnd += onMoveEnd;
+					unit.moveTo(hexData);
+					unit.onMoveEnd += onMoveEnd;
 
 					grid.hideHighlightedCells();
 				}
@@ -61,17 +61,17 @@ public class UserController : UnitController
 
 	private void onMoveEnd()
 	{
-		player.onMoveEnd -= onMoveEnd;
+		unit.onMoveEnd -= onMoveEnd;
 
 		//If the player ran out of energy we can't make any more moves, so finish the turn
-		if (player.energy == 0)
+		if (unit.energy == 0)
 		{
 			gameHUD.endTurnButton.setActive(false);
 			dispatchOnTurnEnd();
 		}
 		else
 		{
-			grid.showHighlightedCells(player.hexCoord, player.energy);
+			grid.showHighlightedCells(unit.hexCoord, unit.energy);
 		}
 	}
 

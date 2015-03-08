@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-public class Player : MonoBehaviour
+public class Unit : MonoBehaviour
 {
 	public event Action onMoveEnd;
 	public event Action<int> onGetGold;
@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
 		this.grid = grid;
 		cachedTransform = transform;
 
-		moveController = new MoveController(moveSpeed, cachedTransform);
+		moveController = new MoveController(grid, cachedTransform, moveSpeed);
 
 		energy = initialEnergy;
 		gold = 0;
@@ -54,7 +54,7 @@ public class Player : MonoBehaviour
 		this.hexCoord = hexData.hexCoord;
 
 		startPosition = cachedTransform.position;
-		targetPosition = Hex.hexToWorld(hexData.hexCoord);
+		targetPosition = grid.hexToWorld(hexData.hexCoord);
 
 		//StartCoroutine(updateMove());
 		moveController.moveTo(hexData.hexCoord);
@@ -86,9 +86,10 @@ public class Player : MonoBehaviour
 	{
 		//Update hex data
 		grid.retrieveHexData(hexCoord).isEmpty = false;
+		grid.retrieveHexData(hexCoord).playerOn(this);
 
 		this.hexCoord = hexCoord;
-		cachedTransform.localPosition = Hex.hexToWorld(hexCoord);
+		cachedTransform.localPosition = grid.hexToWorld(hexCoord);
 	}
 
 	private void updateEnergy(int value)
