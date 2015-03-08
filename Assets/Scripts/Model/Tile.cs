@@ -23,11 +23,11 @@ namespace Model
 			{
 				UnityEngine.Debug.Log(AllNeighbours.Count());
 
-				return AllNeighbours; //.Where(o => o.CanPass);
+				return AllNeighbours.Where(o => o.CanPass);
 			}
 		}
 
-        /*public void FindNeighbours(Tile[,] gameBoard)
+        public void FindNeighbours(Tile[,] gameBoard)
         {
             var neighbours = new List<Tile>();
 
@@ -43,23 +43,7 @@ namespace Model
             }
 
             AllNeighbours = neighbours;
-        }*/
-
-		public void FindNeighbours(Grid grid)
-		{
-			//AllNeighbours = new List<Tile>(grid.retrieveNeighbours(new HexCoordinates(X, Y)).Select(h => new Tile(h.q, h.r)).ToList());
-			List<HexCoordinates> hexList = grid.retrieveNeighbours(new HexCoordinates(X, Y));
-			List<Tile> tileList = new List<Tile>();
-
-			for (int i = 0; i < hexList.Count; i++)
-			{
-				int x = hexList[i].q + 2;
-				int y = hexList[i].r + 2;
-
-				tileList.Add(grid.tileList[x, y]);
-			}
-			AllNeighbours = tileList;
-		}
+        }
 
         public static List<Point> EvenNeighbours
         {

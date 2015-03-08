@@ -22,7 +22,7 @@ public class HexData : MonoBehaviour, IHasNeighbours<HexData>
 		this.hexCoord = hexCoord;
 		transform.localPosition = Hex.hexToWorld(hexCoord);
 
-		if (Random.Range(0.0f, 1.0f) < 0.0f)
+		if (Random.Range(0.0f, 1.0f) < 0.5f)
 		{
 			gold = GameObject.Instantiate(goldPrefab) as GameObject;
 			gold.transform.position = transform.position;

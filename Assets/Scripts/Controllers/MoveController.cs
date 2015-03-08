@@ -2,9 +2,13 @@
 using System;
 using System.Collections;
 
-public class MoveController : MonoBehaviour
+/// <summary>
+/// This class controls the movement of a unit. This controller moves the unit in a straight line from
+/// the start position to the target position
+/// </summary>
+public class MoveController
 {
-	private readonly float speed = 5;
+	private readonly float speed;
 
 	public event Action onMoveEnd;
 
@@ -13,8 +17,12 @@ public class MoveController : MonoBehaviour
 	private Vector3 startPosition;
 	private Vector3 targetPosition;
 
-	public MoveController(Transform cachedTransform)
+	private bool inMove = false;
+	private Vector3 moveDirection;
+
+	public MoveController(float speed, Transform cachedTransform)
 	{
+		this.speed = speed;
 		this.cachedTransform = cachedTransform;
 	}
 
@@ -22,21 +30,26 @@ public class MoveController : MonoBehaviour
 	{	
 		startPosition = cachedTransform.position;
 		targetPosition = Hex.hexToWorld(hexCoord);
-		
-		StartCoroutine(updateMove());
+
+		inMove = true;
+		moveDirection = (targetPosition - startPosition).normalized;
 	}
 	
-	private IEnumerator updateMove()
+	public void update(float deltaTime)
 	{
-		Vector3 direction = (targetPosition - startPosition).normalized;
-		
-		while ((targetPosition - cachedTransform.position).sqrMagnitude > 0.005f)
+		if (inMove)
 		{
-			cachedTransform.position += direction * speed * Time.deltaTime;
-			yield return new WaitForSeconds(Time.deltaTime);
+			if ((targetPosition - cachedTransform.position).sqrMagnitude > 0.005f)
+			{
+				cachedTransform.position += moveDirection * speed * Time.deltaTime;
+			}
+			else
+			{
+				inMove = false;
+				cachedTransform.position = targetPosition;
+
+				if (onMoveEnd != null) onMoveEnd();
+			}
 		}
-		
-		cachedTransform.position = targetPosition;
-		if (onMoveEnd != null) onMoveEnd();
 	}
 }

@@ -105,4 +105,46 @@ public class Hex : MonoBehaviour
 
 		return cubeDistance(ac, bc);
 	}
+
+	public static List<Vector3> cubeRing(Vector3 center, int radius)
+	{
+		List<Vector3> results = new List<Vector3>();
+		Vector3 cube = center + cubeDirections[4] * radius; //cube_add(center, cube_scale(cube_direction(4), radius))
+		
+		for (int i = 0; i < 6; i++)
+		{
+			for (int j = 0; j < radius; j++)
+			{
+				results.Add(cube);
+				cube = cubeNeighbour(cube, i);
+			}
+		}
+		
+		return results;
+	}
+
+	public static Vector3 cubeNeighbour(Vector3 cube, int direction)
+	{
+		return cube + cubeDirections[direction];
+	}
+
+	private static Vector2[] hexDirections = new Vector2[6]
+	{
+		new Vector2(1, 1),
+		new Vector2(1, -1),
+		new Vector2(0, -1),
+		new Vector2(-1, 0),
+		new Vector2(-1, 1),
+		new Vector2(0, 1)
+	};
+
+	private static Vector3[] cubeDirections = new Vector3[6]
+	{
+		new Vector3(1, -1, 0),
+		new Vector3(1, 0, -1),
+		new Vector3(0, 1, -1),
+		new Vector3(-1, 1, 0),
+		new Vector3(-1, 0, 1),
+		new Vector3(0, -1, 1)
+	};
 }

@@ -4,12 +4,11 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
-	private const float speed = 3.5f;
-
 	public event Action onMoveEnd;
 	public event Action<int> onGetGold;
 	public event Action<int> onUpdateEnergy;
 
+	public float moveSpeed = 3.5f;
 	public int initialEnergy = 5;
 
 	private Transform cachedTransform;
@@ -24,11 +23,14 @@ public class Player : MonoBehaviour
 	private int gold;
 
 	private Grid grid;
+	private MoveController moveController;
 
 	public void init(Grid grid)
 	{
 		this.grid = grid;
 		cachedTransform = transform;
+
+		moveController = new MoveController(moveSpeed, cachedTransform);
 
 		energy = initialEnergy;
 		gold = 0;
@@ -54,24 +56,24 @@ public class Player : MonoBehaviour
 		startPosition = cachedTransform.position;
 		targetPosition = Hex.hexToWorld(hexData.hexCoord);
 
-		StartCoroutine(updateMove());
+		//StartCoroutine(updateMove());
+		moveController.moveTo(hexData.hexCoord);
+		moveController.onMoveEnd += onControllerMoveEnd;
 	}
 
-	private IEnumerator updateMove()
+	private void onControllerMoveEnd()
 	{
-		Vector3 direction = (targetPosition - startPosition).normalized;
-
-		while ((targetPosition - cachedTransform.position).sqrMagnitude > 0.005f)
-		{
-			cachedTransform.position += direction * speed * Time.deltaTime;
-			yield return new WaitForSeconds(Time.deltaTime);
-		}
+		moveController.onMoveEnd -= onControllerMoveEnd;
 
 		hexData.isEmpty = false;
 		hexData.playerOn(this);
 
-		cachedTransform.position = targetPosition;
 		if (onMoveEnd != null) onMoveEnd();
+	}
+
+	void Update()
+	{
+		moveController.update(Time.deltaTime);
 	}
 
 	public void updateGold(int value)

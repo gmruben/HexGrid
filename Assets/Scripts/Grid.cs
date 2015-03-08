@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,12 +9,15 @@ using System.Linq;
 
 public class Grid : MonoBehaviour
 {
-	public const int radius = 2;
+	public event Action onCreated;
+
+	public int innerRadius = 1;
+	public int outerRadius = 3;
 
 	public float goldProbability = 0.1f;
-	public GameObject[] hexPrefabList;
 
-	public Tile[, ] tileList = new Tile[5, 5];
+	public GameObject[] hexPrefabList;
+	public float[] hexProbabilityList;
 
 	public GameObject hexPrefab;
 
@@ -25,25 +29,32 @@ public class Grid : MonoBehaviour
 
 	public void init()
 	{
-		for (int i = -radius; i <= radius; i++)
+		StartCoroutine(instantiateGrid());
+	}
+
+	private IEnumerator instantiateGrid()
+	{
+		for (int i = innerRadius; i <= outerRadius; i++)
 		{
-			for (int j = -radius; j <= radius; j++)
+			Vector3 center = Vector3.zero;
+			List<Vector3> ring = Hex.cubeRing(center, i);
+
+			for (int j = 0; j < ring.Count; j++)
 			{
-				instantiateHex(new HexCoordinates(i, j));
-
-				int x = i + radius;
-				int y = j + radius;
-
-				tileList[x, y] = new Tile(x, y);
+				Vector2 hexVector = Hex.cubeToHex(ring[j]);
+				instantiateHex(new HexCoordinates((int) hexVector.x, (int) hexVector.y));
+				
+				yield return new WaitForSeconds(0.1f);
 			}
 		}
-
+		
 		hexList.ToList().ForEach(o => o.Value.FindNeighbours(this));
+		if (onCreated != null) onCreated();
 	}
 
 	public HexCoordinates retrieveRandomCoord()
 	{
-		int randomIndex = Random.Range(0, hexList.Count);
+		int randomIndex = UnityEngine.Random.Range(0, hexList.Count);
 		List<HexData> dataList = new List<HexData>(hexList.Values);
 
 		return dataList[randomIndex].hexCoord;
@@ -73,14 +84,34 @@ public class Grid : MonoBehaviour
 
 	private void instantiateHex(HexCoordinates hexCoord)
 	{
-		int randomIndex = Random.Range(0, hexPrefabList.Length);
-
-		HexData hex = (GameObject.Instantiate(hexPrefabList[randomIndex]) as GameObject).GetComponent<HexData>();
+		HexData hex = (GameObject.Instantiate(retrieveRandomHex()) as GameObject).GetComponent<HexData>();
 
 		hex.transform.parent = transform;
 		hex.init(hexCoord);
 
 		hexList.Add(createId(hexCoord), hex);
+	}
+
+	private GameObject retrieveRandomHex()
+	{
+		int index = 0;
+		float random = UnityEngine.Random.Range(0.0f, 1.0f);
+		float acc = hexProbabilityList[0];
+		
+		for (int i = 0; i < hexProbabilityList.Length; i++)
+		{
+			if (random <= acc)
+			{
+				index = i;
+				break;
+			}
+			else
+			{
+				acc += hexProbabilityList[i + 1];
+			}
+		}
+
+		return hexPrefabList[index];
 	}
 
 	public string createId(HexCoordinates hexCoord)
@@ -107,7 +138,7 @@ public class Grid : MonoBehaviour
 
 	public int count
 	{
-		get { return (int) Mathf.Pow(radius * 2 + 1, 2); }
+		get { return hexList.Count; }
 	}
 
 	public void showHighlightedCells(HexCoordinates hex, int energy)

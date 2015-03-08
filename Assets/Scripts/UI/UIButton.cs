@@ -27,7 +27,7 @@ public class UIButton : MonoBehaviour
 
 		if (text != null && hasText)
 		{
-			text.color = isActive ? button.colors.normalColor : button.colors.disabledColor;
+			//text.color = isActive ? button.colors.normalColor : button.colors.disabledColor;
 		}
 
 		button.interactable = isActive;
@@ -42,7 +42,7 @@ public class UIButton : MonoBehaviour
 	{
 		if (text != null && hasText && isActive)
 		{
-			text.color = button.colors.highlightedColor;
+			//text.color = button.colors.highlightedColor;
 		}
 	}
 
@@ -50,7 +50,7 @@ public class UIButton : MonoBehaviour
 	{
 		if (text != null && hasText && isActive)
 		{
-			text.color = button.colors.normalColor;
+			//text.color = button.colors.normalColor;
 		}
 	}
 
@@ -58,7 +58,7 @@ public class UIButton : MonoBehaviour
 	{
 		if (text != null && hasText && isActive)
 		{
-			text.color = button.colors.pressedColor;
+			//text.color = button.colors.pressedColor;
 		}
 	}
 	
@@ -66,7 +66,7 @@ public class UIButton : MonoBehaviour
 	{
 		if (text != null && hasText && isActive)
 		{
-			text.color = button.colors.normalColor;
+			//text.color = button.colors.normalColor;
 		}
 	}
 
