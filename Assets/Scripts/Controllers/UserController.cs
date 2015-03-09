@@ -3,7 +3,6 @@ using UnityEngine.EventSystems;
 using System;
 using System.Collections;
 
-using Model;
 using PathFind;
 
 /// <summary>
@@ -42,7 +41,7 @@ public class UserController : UnitController
 		{
 			//Convert the mouse position to hex coordinates
 			Vector3 position = GameCamera.cachedCamera.ScreenToWorldPoint(Input.mousePosition);
-			HexCoordinates hex = grid.worldToHex(position);
+			AxialCoordinates hex = grid.worldToHex(position);
 
 			if (grid.isCoordOnBounds(hex))
 			{

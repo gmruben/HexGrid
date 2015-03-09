@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-using Model;
 using PathFind;
 
 /// <summary>
@@ -51,8 +50,8 @@ public class Game : MonoBehaviour
 		userControllerList.Add(new UserController("USER", grid, userUnit, gameHUD));
 		userControllerList.Add(new AIController("AI", grid, aiUnit, userUnit));
 
-		HexCoordinates hexCoord1 = grid.retrieveRandomCoord();
-		HexCoordinates hexCoord2 = grid.retrieveRandomCoord();
+		AxialCoordinates hexCoord1 = grid.retrieveRandomCoord();
+		AxialCoordinates hexCoord2 = grid.retrieveRandomCoord();
 
 		while(hexCoord1 == hexCoord2)
 		{

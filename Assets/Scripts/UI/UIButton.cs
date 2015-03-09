@@ -24,50 +24,12 @@ public class UIButton : MonoBehaviour
 	public void setActive(bool isActive)
 	{
 		this.isActive = isActive;
-
-		if (text != null && hasText)
-		{
-			//text.color = isActive ? button.colors.normalColor : button.colors.disabledColor;
-		}
-
 		button.interactable = isActive;
 	}
 
 	public void onButtonClick()
 	{
 		if (onClick != null) onClick();
-	}
-
-	public void onMouseEnter()
-	{
-		if (text != null && hasText && isActive)
-		{
-			//text.color = button.colors.highlightedColor;
-		}
-	}
-
-	public void onMouseLeave()
-	{
-		if (text != null && hasText && isActive)
-		{
-			//text.color = button.colors.normalColor;
-		}
-	}
-
-	public void onMouseDown()
-	{
-		if (text != null && hasText && isActive)
-		{
-			//text.color = button.colors.pressedColor;
-		}
-	}
-	
-	public void onMouseUp()
-	{
-		if (text != null && hasText && isActive)
-		{
-			//text.color = button.colors.normalColor;
-		}
 	}
 
 	private Button button

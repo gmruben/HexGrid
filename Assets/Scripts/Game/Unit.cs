@@ -2,22 +2,21 @@
 using System;
 using System.Collections;
 
+/// <summary>
+/// A unit can move through the hex grid. It has e fixed amount of energy that uses to move from one hex to another.
+/// </summary>
 public class Unit : MonoBehaviour
 {
 	public event Action onMoveEnd;
 	public event Action<int> onGetGold;
 	public event Action<int> onUpdateEnergy;
 
-	public float moveSpeed = 3.5f;
+	public float moveSpeed = 5.0f;
 	public int initialEnergy = 5;
 
 	private Transform cachedTransform;
 
-	private Vector3 startPosition;
-	private Vector3 targetPosition;
-
 	public int energy { get; private set; }
-	public HexCoordinates hexCoord { get; private set; }
 
 	private HexData hexData;
 	private int gold;
@@ -48,15 +47,9 @@ public class Unit : MonoBehaviour
 		updateEnergy(energy - hexData.energy);
 
 		//Update hex data
-		grid.retrieveHexData(hexCoord).isEmpty = true;
-
+		this.hexData.isEmpty = true;
 		this.hexData = hexData;
-		this.hexCoord = hexData.hexCoord;
 
-		startPosition = cachedTransform.position;
-		targetPosition = grid.hexToWorld(hexData.hexCoord);
-
-		//StartCoroutine(updateMove());
 		moveController.moveTo(hexData.hexCoord);
 		moveController.onMoveEnd += onControllerMoveEnd;
 	}
@@ -65,8 +58,7 @@ public class Unit : MonoBehaviour
 	{
 		moveController.onMoveEnd -= onControllerMoveEnd;
 
-		hexData.isEmpty = false;
-		hexData.playerOn(this);
+		hexData.setPlayerOn(this);
 
 		if (onMoveEnd != null) onMoveEnd();
 	}
@@ -82,13 +74,12 @@ public class Unit : MonoBehaviour
 		if (onGetGold != null) onGetGold(gold);
 	}
 
-	public void setPosition(HexCoordinates hexCoord)
+	public void setPosition(AxialCoordinates hexCoord)
 	{
 		//Update hex data
-		grid.retrieveHexData(hexCoord).isEmpty = false;
-		grid.retrieveHexData(hexCoord).playerOn(this);
+		hexData = grid.retrieveHexData(hexCoord);
+		hexData.setPlayerOn(this);
 
-		this.hexCoord = hexCoord;
 		cachedTransform.localPosition = grid.hexToWorld(hexCoord);
 	}
 
@@ -96,5 +87,10 @@ public class Unit : MonoBehaviour
 	{
 		energy = value;
 		if (onUpdateEnergy != null) onUpdateEnergy(energy);
+	}
+
+	public AxialCoordinates hexCoord
+	{
+		get { return hexData.hexCoord; }
 	}
 }

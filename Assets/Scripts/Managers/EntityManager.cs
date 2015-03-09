@@ -17,4 +17,10 @@ public class EntityManager
 		GameObject enemyPrefab = Resources.Load<GameObject>("Prefabs/Game/AIUnit");
 		return (GameObject.Instantiate(enemyPrefab) as GameObject).GetComponent<Unit>();
 	}
+
+	public static GoldPiece instantiateGoldPiece()
+	{
+		GameObject enemyPrefab = Resources.Load<GameObject>("Prefabs/Game/GoldPiece");
+		return (GameObject.Instantiate(enemyPrefab) as GameObject).GetComponent<GoldPiece>();
+	}
 }

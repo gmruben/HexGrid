@@ -28,7 +28,7 @@ public class MoveController
 		this.transform = transform;
 	}
 
-	public void moveTo(HexCoordinates hexCoord)
+	public void moveTo(AxialCoordinates hexCoord)
 	{	
 		startPosition = transform.position;
 		targetPosition = grid.hexToWorld(hexCoord);

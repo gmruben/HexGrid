@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Class for a Gold Piece. It plays an animation whenever a unit takes it.
+/// </summary>
 public class GoldPiece : MonoBehaviour
 {
 	private Animator animator;

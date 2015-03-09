@@ -1,17 +1,15 @@
 using UnityEngine;
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-using Model;
 using PathFind;
-
-using System.Linq;
 
 /// <summary>
 /// Unit controller for an AI. It calculates the best path to move to where its target is, and follows it
 /// until it runs out of energy
-/// </summary
+/// </summary>
 public class AIController : UnitController
 {
 	private Grid grid;
@@ -38,40 +36,36 @@ public class AIController : UnitController
 		unit.reset();
 		currentPath.Clear();
 
+		//Find the path for this turn
 		currentPath = findPath();
 
 		currentIndex = 0;
-		if (currentIndex < currentPath.Count && unit.energy >= currentPath[currentIndex].energy)
-		{
-			moveTo(currentPath[currentIndex]);
-		}
-		else
-		{
-			dispatchOnTurnEnd();
-		}
+		checkForMove();
 	}
 
 	private List<HexData> findPath()
 	{
+		List<HexData> hexList = new List<HexData>(); 
+
 		HexData start = grid.retrieveHexData(unit.hexCoord);
 		HexData destination = grid.retrieveHexData(target.hexCoord);
 
-		//For the distance function we use the cell energy
-		Func<HexData, HexData, double> distance = (node1, node2) => node2.energy;
-		//For the estimate we just use the direct distance between two cells
-		Func<HexData, double> estimate = t => HexMath.hexDistance(t.hexCoord, destination.hexCoord);
-		//
-		Func<HexData, List<HexData>> neighbours = node => node.Neighbours.ToList();
-		
-		List<HexData> path = PathFind.PathFind.FindPath(start, destination, distance, estimate, neighbours).ToList();
+		//Calculate the path to that hex. We calculate the path to the user unit taking in account all neighbours and then removing that last hex 
+		Path<HexData> path = PathFind.PathFind.FindPathHexData(start, destination);
 
-		//Remove the first(unit position) and last node(target position)
-		path.RemoveAt(0);
-		path.RemoveAt(path.Count - 1);
+		//If there is a path
+		if (path != null)
+		{
+			hexList = path.ToList();
 
-		path.Reverse();
+			//Remove the first(unit position) and last node(target position)
+			hexList.RemoveAt(0);
+			hexList.RemoveAt(hexList.Count - 1);
 
-		return path;
+			hexList.Reverse();
+		}
+
+		return hexList;
 	}
 
 	public override void update(float deltaTime)
@@ -79,25 +73,33 @@ public class AIController : UnitController
 
 	}
 
-	public void moveTo(HexData hexData)
+	private void moveTo(HexData hexData)
 	{
 		unit.moveTo(hexData);
 		unit.onMoveEnd += onMoveEnd;
+	}
+
+	/// <summary>
+	/// Calculates whether the unit can move to the next cell of not
+	/// </summary>
+	private void checkForMove()
+	{
+		//Move to the next cell, if there is still cells left in the path and we have enough energy to move to that cell
+		if (currentIndex < currentPath.Count && unit.energy >= currentPath[currentIndex].energy)
+		{
+			moveTo(currentPath[currentIndex]);
+		}
+		else //If not, end the turn
+		{
+			dispatchOnTurnEnd();
+		}
 	}
 
 	private void onMoveEnd()
 	{
 		unit.onMoveEnd -= onMoveEnd;
 
-		//Move to the next cell, if there is still cells left in the path and we have enough energy to move to that cell
 		currentIndex++;
-		if (currentIndex < currentPath.Count && unit.energy >= currentPath[currentIndex].energy)
-		{
-			moveTo(currentPath[currentIndex]);
-		}
-		else
-		{
-			dispatchOnTurnEnd();
-		}
+		checkForMove();
 	}
 }
